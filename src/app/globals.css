@@ -1,26 +1,125 @@
 @import "tailwindcss";
 
+/* Paleta oficial do manual de marca da Pádua */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --cor-primaria: #16284a;
+  --cor-primaria-profunda: #0c1830;
+  --cor-secundaria: #b9975b;
+  --cor-creme: #f5f2ec;
+  --cor-areia: #edebe4;
+  --cor-areia-escura: #e3e0d8;
+  --cor-texto-suave: #5c6878;
+  --cor-texto-claro: #aeb7c6;
+  --header-h: 72px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@theme {
+  --color-navy: var(--cor-primaria);
+  --color-navy-deep: var(--cor-primaria-profunda);
+  --color-navy-soft: #213a66;
+  --color-gold: var(--cor-secundaria);
+  --color-gold-light: #d4bc8f;
+  /* Dourado escurecido: o dourado da marca não tem contraste para texto sobre fundo claro */
+  --color-gold-dark: #7d6232;
+  --color-cream: var(--cor-creme);
+  --color-sand: var(--cor-areia);
+  --color-sand-dark: var(--cor-areia-escura);
+  --color-slate: var(--cor-texto-suave);
+  --color-slate-light: var(--cor-texto-claro);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-card: 0 1px 2px rgb(12 24 48 / 0.04), 0 12px 32px -12px rgb(12 24 48 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(12 24 48 / 0.06), 0 24px 48px -16px rgb(12 24 48 / 0.32);
+  --shadow-gold: 0 10px 30px -10px rgb(185 151 91 / 0.6);
+
+  --animate-pulse-ring: pulse-ring 2.4s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @keyframes pulse-ring {
+    0% { transform: scale(1); opacity: 0.55; }
+    100% { transform: scale(1.7); opacity: 0; }
   }
 }
 
+html {
+  scroll-padding-top: calc(var(--header-h) + 16px);
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--cor-creme);
+  color: var(--cor-primaria);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--cor-secundaria);
+  color: var(--cor-primaria-profunda);
+}
+
+:focus-visible {
+  outline: 2px solid var(--cor-secundaria);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+@layer components {
+  .container-site {
+    width: 100%;
+    max-width: 1240px;
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+  @media (min-width: 768px) {
+    .container-site { padding-inline: 32px; }
+  }
+
+  .section-y { padding-block: 72px; }
+  @media (min-width: 1024px) {
+    .section-y { padding-block: 112px; }
+  }
+
+  /* Grade de pontos dourados (assinatura visual das seções) */
+  .dot-grid {
+    background-image: radial-gradient(var(--cor-secundaria) 1.2px, transparent 1.2px);
+    background-size: 14px 14px;
+  }
+
+  /* Profundidade sobre o navy: brilho dourado no topo e azul suave na base */
+  .navy-glow {
+    background:
+      radial-gradient(80% 60% at 85% 0%, rgb(185 151 91 / 0.14), transparent 60%),
+      radial-gradient(60% 50% at 0% 100%, rgb(33 58 102 / 0.9), transparent 70%),
+      var(--cor-primaria-profunda);
+  }
+}
+
+/* Entrada dos heróis em CSS puro: não depende de JS nem atrasa o LCP */
+@keyframes enter-up {
+  from { opacity: 0; transform: translate3d(0, 24px, 0); }
+  to { opacity: 1; transform: none; }
+}
+.enter {
+  animation: enter-up 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
