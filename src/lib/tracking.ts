@@ -4,7 +4,8 @@
  * e Meta Pixel são configurados dentro do GTM. Não adicionar gtag/pixel direto.
  *
  * Eventos: click_whatsapp (cta_id) · click_cta · click_phone · click_email
- * · click_instagram · form_submit · faq_open · scroll_25/50/75/100 · section_view
+ * · click_instagram · form_step (step) · form_submit · faq_open · scroll_25/50/75/100 · section_view
+ * Nunca enviar dados pessoais do formulário (CPF, nome, telefone) para o dataLayer.
  */
 
 export type TrackingEvent =
@@ -13,6 +14,7 @@ export type TrackingEvent =
   | "click_phone"
   | "click_email"
   | "click_instagram"
+  | "form_step"
   | "form_submit"
   | "faq_open"
   | "scroll_25"
@@ -43,6 +45,7 @@ const RESET_PARAMS: TrackingParams = {
   faq_question: undefined,
   form_id: undefined,
   insurance_type: undefined,
+  step: undefined,
 };
 
 export type Utms = Partial<Record<(typeof UTM_KEYS)[number], string>>;

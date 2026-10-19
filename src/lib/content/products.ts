@@ -165,7 +165,7 @@ export const AUTO: ProductContent = {
     {
       question: "O que preciso para cotar o seguro auto?",
       answer:
-        "Modelo e ano do veículo, CEP onde o carro passa a noite, dados do principal condutor e, se tiver, a apólice atual. Com isso a cotação sai rápido.",
+        "CPF, data de nascimento, estado civil e profissão do principal condutor, o CEP onde o carro passa a noite e os dados do veículo (modelo, versão e ano). Se tiver, a placa e a apólice atual ajudam. Com isso a cotação sai rápido.",
     },
     {
       question: "Trocar de seguradora faz perder o bônus?",

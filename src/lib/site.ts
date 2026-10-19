@@ -16,11 +16,11 @@ export const SITE = {
   email: "contato@paduaseguros.com.br",
   instagramUrl: "https://www.instagram.com/paduaseguros/",
   instagramHandle: "@paduaseguros",
-  // PLACEHOLDER: número de WhatsApp com DDI + DDD, só dígitos (ex.: 5511999999999)
-  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "5500000000000",
-  // PLACEHOLDER: telefone exibido e link tel:
-  phoneDisplay: "(00) 00000-0000",
-  phoneHref: "tel:+5500000000000",
+  // WhatsApp com DDI + DDD, só dígitos (a env sobrescreve, se definida)
+  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "5562982294264",
+  // Telefone exibido e link tel:
+  phoneDisplay: "(62) 98229-4264",
+  phoneHref: "tel:+5562982294264",
   // PLACEHOLDER: dados legais
   cnpj: "00.000.000/0001-00",
   susep: "000000000",

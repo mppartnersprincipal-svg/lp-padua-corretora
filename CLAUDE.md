@@ -16,7 +16,7 @@ Site institucional da Pádua Administradora e Corretora de Seguros (Seguro Auto 
 | Diferencial (kick-off) | Pós-venda / atendimento; cotação fechada em até 1h |
 | Concorrência | Concessionárias (demanda) e cooperativas/proteção veicular (preço) |
 | Objetivo do site | Visibilidade + leads no WhatsApp; destino das campanhas |
-| WhatsApp | **PENDENTE** — `NEXT_PUBLIC_WHATSAPP_NUMBER` |
+| WhatsApp | (62) 98229-4264 — `5562982294264` (`lib/site.ts`, sobrescrito por `NEXT_PUBLIC_WHATSAPP_NUMBER`) |
 | URL de produção | **PENDENTE** — `NEXT_PUBLIC_SITE_URL` (padrão `paduaseguros.com.br`) |
 
 Insumos em `../` : `M_P - Kick Off Padua Corretora.docx.pdf`, `Referências/` (TrustShield, Assurena) e `Pádua — Manual de Marca/`. Referência de estrutura: portoseguro.com.br.
@@ -78,7 +78,12 @@ Destaque em títulos: `<Highlight>` (dourado no navy; sublinhado dourado no crem
 ## Conversão e trackeamento
 
 - Todo CTA de WhatsApp tem `data-cta="<id único>"` → `click_whatsapp` + `cta_id`. Outros CTAs: `data-track="click_cta" data-cta-id="..."`.
-- `QuoteForm` valida, dispara `form_submit` (`form_id`, `insurance_type`) e abre `wa.me` com a mensagem pronta + origem (UTMs).
+- `QuoteForm` (passos e campos em `lib/quote.ts` → `QUOTE_STEPS`; rótulos/máscaras em `components/ui/quote/fieldConfig.ts`):
+  - **Auto, 3 passos** (pedido da dona da Pádua em 16/10/2026): 1) nome completo, WhatsApp, nascimento, CPF · 2) estado civil, profissão, CEP de pernoite (cidade via ViaCEP) · 3) modelo/versão/ano, placa (opcional), situação.
+  - **Empresarial, 1 passo**: nome, WhatsApp, cidade, ramo, o que proteger.
+  - Valida CPF (dígitos verificadores), nascimento (data real, 18+), CEP, telefone e placa (antiga/Mercosul).
+  - Dispara `form_step` (`step` 2 e 3) e `form_submit` (`form_id`, `insurance_type`) e abre `wa.me` com a mensagem pronta + origem (UTMs).
+  - **Nunca** colocar CPF, nome, telefone ou outro dado do formulário no dataLayer (teste E2E confere).
 - Automáticos: `scroll_25/50/75/100`, `section_view` (toda `main section[id]`), `faq_open`.
 - GTM só carrega com `NEXT_PUBLIC_GTM_ID` válido. GA4/Ads/Pixel ficam DENTRO do GTM (skill `lp-tracking-dashboard`, fases 2 e 3 pendentes).
 
@@ -102,13 +107,14 @@ npm install
 npm run dev     # http://localhost:3000
 npm run build
 npm run lint
+npm test        # Vitest: máscaras/validações, mensagem do WhatsApp, ViaCEP
 ```
 
 ---
 
 ## Pendências do cliente
 
-- [ ] Número de WhatsApp/telefone (`NEXT_PUBLIC_WHATSAPP_NUMBER`) — **bloqueia o lançamento**
+- [x] Número de WhatsApp/telefone — (62) 98229-4264 (recebido em 19/10/2026)
 - [ ] CNPJ, registro SUSEP, endereço e horário real (`lib/site.ts`)
 - [ ] Depoimentos reais, fotos da Carmilene/equipe, logos das seguradoras parceiras
 - [ ] Domínio + IDs de GTM/GA4 + conversões do Google Ads
@@ -116,3 +122,4 @@ npm run lint
 ## Histórico
 
 - 2026-10-15 — Site criado (5 páginas + política), trackeamento fase 1, build/lint verdes, QA em 360/390/1440.
+- 2026-10-16 — Cotação auto em 3 passos com CPF, CEP, nascimento, estado civil, profissão e veículo (pedido da cliente); testes Vitest (24); política e FAQ atualizadas.
