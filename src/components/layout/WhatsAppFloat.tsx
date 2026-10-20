@@ -9,6 +9,7 @@ export function WhatsAppFloat() {
       target="_blank"
       rel="noopener noreferrer"
       data-cta="fab_whatsapp"
+      data-section="flutuante"
       aria-label="Falar com a Pádua no WhatsApp (abre em nova aba)"
       className="group fixed right-6 bottom-6 z-40 hidden items-center lg:flex"
     >

@@ -1,5 +1,6 @@
 import Script from "next/script";
 import type { ReactNode } from "react";
+import { Collector } from "@/components/tracking/Collector";
 import { TrackingEvents } from "@/components/tracking/TrackingEvents";
 import { UTMCapture } from "@/components/tracking/UTMCapture";
 
@@ -13,7 +14,7 @@ interface TrackingProviderProps {
 }
 
 /**
- * GTM + captura de UTMs + eventos de clique/rolagem/seção.
+ * GTM + captura de UTMs + eventos de clique/rolagem/seção + coletor do /dashboard.
  * GA4, Google Ads e Meta Pixel são configurados DENTRO do GTM.
  */
 export function TrackingProvider({ children }: TrackingProviderProps) {
@@ -26,6 +27,7 @@ export function TrackingProvider({ children }: TrackingProviderProps) {
       )}
       <UTMCapture />
       <TrackingEvents />
+      <Collector />
       {children}
     </>
   );

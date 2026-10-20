@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run"
+    "test": "vitest run && node --test \"src/server/analytics/tests/*.test.mjs\"",
+    "test:analytics": "node --test \"src/server/analytics/tests/*.test.mjs\""
   },
   "dependencies": {
     "@react-spring/web": "^10.1.2",

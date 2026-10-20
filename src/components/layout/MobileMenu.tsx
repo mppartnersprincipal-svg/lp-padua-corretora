@@ -68,6 +68,7 @@ export function MobileMenu({ isOpen, onClose, pathname, quoteHref }: MobileMenuP
           style={style}
           className="fixed inset-x-0 top-(--header-h) bottom-0 overflow-y-auto bg-navy-deep lg:hidden"
           data-lenis-prevent=""
+          data-section="menu"
         >
           <nav aria-label="Menu mobile" className="container-site flex min-h-full flex-col gap-10 pt-8 pb-12">
             <ul className="flex flex-col divide-y divide-white/10 border-y border-white/10">

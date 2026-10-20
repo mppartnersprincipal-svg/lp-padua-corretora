@@ -20,6 +20,7 @@ export function MobileCtaBar() {
         isVisible ? "translate-y-0" : "translate-y-full"
       }`}
       inert={!isVisible}
+      data-section="barra-mobile"
     >
       <div className="mx-auto grid max-w-md grid-cols-2 gap-3">
         <Link

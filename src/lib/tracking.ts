@@ -6,7 +6,13 @@
  * Eventos: click_whatsapp (cta_id) · click_cta · click_phone · click_email
  * · click_instagram · form_step (step) · form_submit · faq_open · scroll_25/50/75/100 · section_view
  * Nunca enviar dados pessoais do formulário (CPF, nome, telefone) para o dataLayer.
+ *
+ * Cada evento também vai para o coletor do /dashboard (lib/collector.ts), traduzido:
+ * click_whatsapp e form_submit (o formulário abre o WhatsApp) → whatsapp_click; demais
+ * cliques → cta_click; todos com cta_location = cta_id, form_id ou o tipo do link.
  */
+
+import { collect } from "@/lib/collector";
 
 export type TrackingEvent =
   | "click_whatsapp"
@@ -84,8 +90,39 @@ export function getUtms(): Utms {
   }
 }
 
+// Nome do evento no coletor do /dashboard; os ausentes (scroll, section_view) ele mede sozinho
+const COLLECTOR_EVENT: Partial<Record<TrackingEvent, string>> = {
+  click_whatsapp: "whatsapp_click",
+  form_submit: "whatsapp_click",
+  click_phone: "phone_click",
+  click_cta: "cta_click",
+  click_email: "cta_click",
+  click_instagram: "cta_click",
+  faq_open: "faq_open",
+  form_step: "form_step",
+};
+
+const LINK_LABEL: Partial<Record<TrackingEvent, string>> = {
+  click_phone: "telefone",
+  click_email: "email",
+  click_instagram: "instagram",
+};
+
+/** Só parâmetros de botão/etapa, nunca dados do formulário. */
+export function toCollector(event: TrackingEvent, params: TrackingParams): { name: string; props: TrackingParams } | null {
+  const name = COLLECTOR_EVENT[event];
+  if (!name) return null;
+  if (event === "faq_open") return { name, props: { faq_question: params.faq_question } };
+  if (event === "form_step") return { name, props: { form_id: params.form_id, insurance_type: params.insurance_type, step: params.step } };
+  if (event === "form_submit") return { name, props: { cta_location: params.form_id, insurance_type: params.insurance_type } };
+  return { name, props: { cta_location: params.cta_id ?? LINK_LABEL[event] } };
+}
+
 export function track(event: TrackingEvent, params: TrackingParams = {}): void {
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer ?? [];
   window.dataLayer.push({ event, ...RESET_PARAMS, ...getUtms(), ...params });
+
+  const mirrored = toCollector(event, params);
+  if (mirrored) collect(mirrored.name, mirrored.props);
 }

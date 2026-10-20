@@ -12,7 +12,7 @@ export const SITE = {
   name: "Pádua Corretora",
   legalName: "Pádua Administradora e Corretora de Seguros",
   tagline: "Administradora e Corretora de Seguros",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://paduaseguros.com.br",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.paduaseguros.com.br",
   email: "contato@paduaseguros.com.br",
   instagramUrl: "https://www.instagram.com/paduaseguros/",
   instagramHandle: "@paduaseguros",

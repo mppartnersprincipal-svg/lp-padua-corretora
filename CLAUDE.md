@@ -17,7 +17,7 @@ Site institucional da Pádua Administradora e Corretora de Seguros (Seguro Auto 
 | Concorrência | Concessionárias (demanda) e cooperativas/proteção veicular (preço) |
 | Objetivo do site | Visibilidade + leads no WhatsApp; destino das campanhas |
 | WhatsApp | (62) 98229-4264 — `5562982294264` (`lib/site.ts`, sobrescrito por `NEXT_PUBLIC_WHATSAPP_NUMBER`) |
-| URL de produção | **PENDENTE** — `NEXT_PUBLIC_SITE_URL` (padrão `paduaseguros.com.br`) |
+| URL de produção | **https://www.paduaseguros.com.br** (o domínio sem www redireciona para o www) — `NEXT_PUBLIC_SITE_URL` |
 
 Insumos em `../` : `M_P - Kick Off Padua Corretora.docx.pdf`, `Referências/` (TrustShield, Assurena) e `Pádua — Manual de Marca/`. Referência de estrutura: portoseguro.com.br.
 
@@ -85,7 +85,8 @@ Destaque em títulos: `<Highlight>` (dourado no navy; sublinhado dourado no crem
   - Dispara `form_step` (`step` 2 e 3) e `form_submit` (`form_id`, `insurance_type`) e abre `wa.me` com a mensagem pronta + origem (UTMs).
   - **Nunca** colocar CPF, nome, telefone ou outro dado do formulário no dataLayer (teste E2E confere).
 - Automáticos: `scroll_25/50/75/100`, `section_view` (toda `main section[id]`), `faq_open`.
-- GTM só carrega com `NEXT_PUBLIC_GTM_ID` válido. GA4/Ads/Pixel ficam DENTRO do GTM (skill `lp-tracking-dashboard`, fases 2 e 3 pendentes).
+- GTM só carrega com `NEXT_PUBLIC_GTM_ID` válido (`GTM-MRMP8MT7`). GA4 (`G-NM41WZ5Y2C`) e Meta Pixel (`1100323236037100`) ficam DENTRO do GTM: contêiner em `gtm/GTM-MRMP8MT7-importar.json` (IDs e eventos no `README.md`). Google Ads: ainda sem conversões (só Meta por enquanto).
+- Painel `/dashboard` (`DASHBOARD.md`): coletor anônimo `lib/collector.ts` (SPA, um `page_type` por rota), rotas `app/api/{collect,login,dashboard,ga4,google-ads}`, lógica em `src/server/analytics` (mesma da Nova Ferragista), banco Supabase `padua_*`. Página/seção/botão novo: atualizar os mapas listados no DASHBOARD.md.
 
 ---
 
@@ -117,9 +118,12 @@ npm test        # Vitest: máscaras/validações, mensagem do WhatsApp, ViaCEP
 - [x] Número de WhatsApp/telefone — (62) 98229-4264 (recebido em 19/10/2026)
 - [ ] CNPJ, registro SUSEP, endereço e horário real (`lib/site.ts`)
 - [ ] Depoimentos reais, fotos da Carmilene/equipe, logos das seguradoras parceiras
-- [ ] Domínio + IDs de GTM/GA4 + conversões do Google Ads
+- [x] Domínio, GTM, GA4 e Meta Pixel (20/10/2026)
+- [ ] Conversões do Google Ads (quando a Pádua anunciar no Google)
+- [ ] ID numérico da propriedade GA4 (`GA4_PROPERTY_ID`) para o painel
 
 ## Histórico
 
 - 2026-10-15 — Site criado (5 páginas + política), trackeamento fase 1, build/lint verdes, QA em 360/390/1440.
 - 2026-10-16 — Cotação auto em 3 passos com CPF, CEP, nascimento, estado civil, profissão e veículo (pedido da cliente); testes Vitest (24); política e FAQ atualizadas.
+- 2026-10-20 — Trackeamento fases 2 e 3: contêiner do GTM (GA4 + Meta Pixel), coletor first-party e painel /dashboard portados da Nova Ferragista para o Next, canonical no www, política de privacidade citando Pixel e estatística própria.
