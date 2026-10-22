@@ -28,7 +28,7 @@ npm test        # Vitest + node --test (analytics do painel)
 `gtm/GTM-MRMP8MT7-importar.json` (gerado pela skill `lp-tracking-dashboard`): Google Tag do GA4, uma tag de evento
 GA4 com nome = `{{Event}}` para todos os eventos abaixo (com `cta_id`, `section_id`, `percent_scrolled`, `faq_question`,
 `form_id`, `insurance_type`, `step` e UTMs), Vinculador de conversões, Meta Pixel (base + PageView em toda página e
-em cada troca de rota), `Contact` no `click_whatsapp` e `Lead` no `form_complete`.
+em cada troca de rota) e `Lead` tanto no `click_whatsapp` (`content_name: whatsapp`, `content_category` = `cta_id`) quanto no `form_complete` (`content_name: formulario`, `content_category` = `form_id`) — um único evento de otimização para a Meta; a origem fica no parâmetro.
 
 Importar: GTM → Administrador → Importar contêiner → arquivo → espaço de trabalho existente → **Mesclar** +
 **Substituir conflitantes** → Visualizar → **Enviar → Publicar**. No GA4, marcar `click_whatsapp` e `form_complete`
