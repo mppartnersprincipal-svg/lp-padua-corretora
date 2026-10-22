@@ -1,7 +1,7 @@
 // Agregações do /dashboard (api/_lib/report.js): funil, contatos, jornadas e KPIs.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { funnels, kpis, contactReport, journeys, SECTIONS } from '../report.js';
+import { daily, funnels, kpis, contactReport, journeys, leads, SECTIONS } from '../report.js';
 
 const ev = (session_id, ts, name, props = {}, page_type = 'home') => ({ session_id, ts, name, props, page_type });
 
@@ -72,4 +72,33 @@ test('click texts containing | keep text, section and page apart', async () => {
   const { clicks } = await import('../report.js');
   const [row] = clicks([{ session_id: 'a', name: 'click', page_type: 'home', props: { text: 'Seguro Auto', section: 'header' } }]);
   assert.deepEqual(row, { text: 'Seguro Auto', section: 'header', page: 'home', value: 1 });
+});
+
+test('leads split form submissions (cta_location = form_id) from WhatsApp buttons', () => {
+  const events = [
+    ev('a', '2026-10-22T12:00:00Z', 'whatsapp_click', { cta_location: 'form_hero_home', insurance_type: 'auto' }),
+    ev('b', '2026-10-22T12:00:00Z', 'whatsapp_click', { cta_location: 'form_hero_empresarial', insurance_type: 'empresarial' }),
+    ev('c', '2026-10-22T12:00:00Z', 'whatsapp_click', { cta_location: 'fab_whatsapp' }),
+    ev('c', '2026-10-22T12:00:00Z', 'phone_click', { cta_location: 'telefone · contato' }),
+  ];
+  const l = leads(events);
+  assert.equal(l.total, 3);
+  assert.equal(l.form, 2);
+  assert.equal(l.buttons, 1);
+  assert.equal(l.form_share, 66.7);
+  assert.deepEqual(l.form_by_type, [{ key: 'auto', value: 1 }, { key: 'empresarial', value: 1 }]);
+  assert.deepEqual(l.buttons_by_location, [{ key: 'fab_whatsapp', value: 1 }]);
+});
+
+test('daily series counts form and button leads on the day of the click', () => {
+  const from = new Date('2026-10-22T03:00:00Z'), to = new Date('2026-10-24T03:00:00Z');
+  const sessions = [{ started_at: '2026-10-22T12:00:00Z', wa_clicks: 2 }];
+  const events = [
+    ev('a', '2026-10-22T12:00:00Z', 'whatsapp_click', { cta_location: 'form_hero_home' }),
+    ev('a', '2026-10-23T12:00:00Z', 'whatsapp_click', { cta_location: 'cta_whatsapp_hero' }),
+  ];
+  const d = daily(sessions, from, to, events);
+  assert.equal(d.length, 2);
+  assert.deepEqual([d[0].form_leads, d[0].button_leads], [1, 0]);
+  assert.deepEqual([d[1].form_leads, d[1].button_leads], [0, 1]);
 });

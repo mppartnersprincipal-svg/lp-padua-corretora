@@ -60,15 +60,38 @@ export function kpis(ss) {
   };
 }
 
-export function daily(sessions, from, to) {
+export function daily(sessions, from, to, events = []) {
   const out = {};
-  for (let d = new Date(from); d < to; d = new Date(d.getTime() + 86400000)) out[localDate(d)] = { date: localDate(d), sessions: 0, wa_clicks: 0, phone_clicks: 0 };
+  for (let d = new Date(from); d < to; d = new Date(d.getTime() + 86400000)) out[localDate(d)] = { date: localDate(d), sessions: 0, wa_clicks: 0, phone_clicks: 0, form_leads: 0, button_leads: 0 };
   sessions.forEach((s) => {
     const row = out[localDate(new Date(s.started_at))];
     if (!row) return;
     row.sessions++; row.wa_clicks += s.wa_clicks || 0; row.phone_clicks += s.phone_clicks || 0;
   });
+  // Leads por dia contados nos eventos (o dia é o do clique, não o do início da sessão)
+  events.filter((e) => e.name === 'whatsapp_click').forEach((e) => {
+    const row = out[localDate(new Date(e.ts))];
+    if (!row) return;
+    if (isFormLead(e)) row.form_leads++; else row.button_leads++;
+  });
   return Object.values(out);
+}
+
+/** Lead = clique de WhatsApp. Vem do formulário de cotação (cta_location = form_id) ou de um botão (cta_id). */
+const isFormLead = (e) => /^form_/.test(e.props?.cta_location || '');
+export function leads(events) {
+  const wa = events.filter((e) => e.name === 'whatsapp_click');
+  const form = wa.filter(isFormLead);
+  const buttons = wa.filter((e) => !isFormLead(e));
+  return {
+    total: wa.length,
+    form: form.length,
+    buttons: buttons.length,
+    form_share: pct1(form.length, wa.length),
+    form_by_type: count(form, (e) => e.props.insurance_type || 'nao_informado'),
+    form_by_location: count(form, (e) => e.props.cta_location),
+    buttons_by_location: count(buttons, (e) => e.props.cta_location || '(sem cta_location)'),
+  };
 }
 
 /** Contatos (WhatsApp + ligação) por cta_location, com pivô por canal do visitante. */
@@ -162,19 +185,23 @@ export function journeys(sessions, evBySession, mode) {
 }
 
 /** Monta o relatório completo. sessionsAll/prevAll já vêm do período; filtros aplicados aqui. */
-export function buildReport({ r, sessionsAll, prevAll, eventsAll, origem, pagina, jornadas }) {
+export function buildReport({ r, sessionsAll, prevAll, eventsAll, prevEventsAll, origem, pagina, jornadas }) {
   const pass = (s) => (!origem || s.channel === origem) && (!pagina || s.landing_page_type === pagina);
   const sessions = sessionsAll.filter(pass);
   const sid = new Set(sessions.map((s) => s.id));
   const events = eventsAll.filter((e) => sid.has(e.session_id));
+  const prevSessions = prevAll.filter(pass);
+  const prevSid = new Set(prevSessions.map((s) => s.id));
+  const prevEvents = (prevEventsAll || []).filter((e) => prevSid.has(e.session_id));
   const byIdAll = Object.fromEntries(sessionsAll.map((s) => [s.id, s]));
   const channelOf = (id) => byIdAll[id]?.channel || 'other';
   const evBySession = {};
   events.forEach((e) => (evBySession[e.session_id] ||= []).push(e));
 
   return {
-    kpis: { current: kpis(sessions), previous: kpis(prevAll.filter(pass)) },
-    daily: daily(sessions, r.from, r.to),
+    kpis: { current: kpis(sessions), previous: kpis(prevSessions) },
+    leads: { current: leads(events), previous: leads(prevEvents) },
+    daily: daily(sessions, r.from, r.to, events),
     // Origem e página de entrada mostram o período inteiro de propósito (ignoram o próprio filtro)
     channels: count(sessionsAll.filter((s) => !pagina || s.landing_page_type === pagina), (s) => s.channel || 'other'),
     pages: count(sessionsAll.filter((s) => !origem || s.channel === origem), (s) => s.landing_page_type || '?'),

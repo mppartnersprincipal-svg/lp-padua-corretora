@@ -235,7 +235,7 @@
       <section class="block" id="visao">
         <div class="kpis" id="kpis"></div>
         <div class="grid g-2">
-          <div class="card"><header><div><h3>Visitas por dia</h3><p>Sessões, cliques no WhatsApp e ligações</p></div></header><div class="chart chart--tall"><canvas id="c-daily" role="img" aria-label="Visitas por dia"></canvas></div></div>
+          <div class="card"><header><div><h3>Visitas por dia</h3><p>Sessões, leads (formulário e botão de WhatsApp) e ligações</p></div></header><div class="chart chart--tall"><canvas id="c-daily" role="img" aria-label="Visitas por dia"></canvas></div></div>
           <div class="card"><header><div><h3>Origem</h3><p>Todas as visitas do período (ignora o filtro de origem)</p></div></header><div class="chart chart--tall"><canvas id="c-channels" role="img" aria-label="Origem das visitas"></canvas></div></div>
         </div>
         <div class="card" style="margin-bottom:24px"><header><div><h3>Página de entrada</h3><p>Onde a visita começou (ignora o filtro de página)</p></div></header><div class="bars" id="pages"></div></div>
@@ -247,7 +247,8 @@
 
       <section class="block" id="contatos">
         <h2>Contatos: qual botão converte</h2>
-        <p class="lead">WhatsApp por botão (o <code>cta_id</code> enviado ao GTM). O envio do formulário de cotação também abre o WhatsApp e aparece aqui como "Formulário".</p>
+        <p class="lead">Lead = clique de WhatsApp: pelo formulário de cotação (que abre o WhatsApp com a mensagem pronta) ou por um botão "Falar no WhatsApp" (o <code>cta_id</code> enviado ao GTM). É o mesmo evento <code>Lead</code> do Meta Pixel.</p>
+        <div class="card" style="margin-bottom:24px"><header><div><h3>Leads: formulário × botões</h3><p id="leads-sub"></p></div></header><div class="bars gold" id="leads-split"></div></div>
         <div class="grid g-11">
           <div class="card"><header><div><h3>WhatsApp</h3><p>Onde o clique aconteceu</p></div></header><div class="bars" id="wa-loc"></div></div>
           <div class="card"><header><div><h3>Ligação</h3><p>Onde o clique aconteceu</p></div></header><div class="bars gold" id="phone-loc"></div></div>

@@ -114,7 +114,7 @@
   function render(d) {
     lastReport = d;
     $('#updated').textContent = 'Período ' + brDate(d.range.de) + ' a ' + brDate(d.range.ate) + ' · atualizado ' + new Date(d.generated_at).toLocaleTimeString('pt-BR') + (d.truncated ? ' · período grande demais: dados parciais, reduza o intervalo' : '');
-    renderKpis(d.kpis.current, d.kpis.previous);
+    renderKpis(d.kpis.current, d.kpis.previous, d.leads.current, d.leads.previous);
     renderOverview(d);
     bars('#pages', d.pages.map(function (x) { return { key: x.key, label: PAGE[x.key] || x.key, value: x.value }; }));
     renderContacts(d);
@@ -128,10 +128,13 @@
     bars('#browsers', d.browsers); bars('#os', d.os);
     donut('c-consent', d.consent.map(function (x) { return { key: CONSENT[x.key] || x.key, value: x.value }; }));
   }
-  function renderKpis(c, p) {
+  function renderKpis(c, p, l, lp) {
     $('#kpis').innerHTML = [
       kpi('Visitas', c.sessions, p.sessions), kpi('Visitantes', c.visitors, p.visitors),
-      kpi('Cliques WhatsApp', c.wa_clicks, p.wa_clicks, null, null, 'gold'), kpi('Ligações', c.phone_clicks, p.phone_clicks, null, null, 'gold'),
+      kpi('Leads', l.total, lp.total, null, null, 'gold', 'Formulário + botões de WhatsApp'),
+      kpi('Leads pelo formulário', l.form, lp.form, null, null, 'gold', 'Cotação enviada (abre o WhatsApp)'),
+      kpi('Leads pelo botão WhatsApp', l.buttons, lp.buttons, null, null, 'gold', 'Cliques em "Falar no WhatsApp"'),
+      kpi('Ligações', c.phone_clicks, p.phone_clicks, null, null, 'gold'),
       kpi('Taxa de conversão', dec(c.conversion_rate, 1) + '%', null, c.conversion_rate - p.conversion_rate, 'pp', 'gold', 'Sessões com WhatsApp, cotação ou ligação'),
       kpi('Tempo médio', c.avg_duration_s + ' s', null, pctDelta(c.avg_duration_s, p.avg_duration_s)), kpi('Rolagem média', c.avg_scroll_pct + '%'),
       kpi('Via Google Ads', dec(c.google_ads_share, 1) + '%', null, c.google_ads_share - p.google_ads_share, 'pp'),
@@ -139,7 +142,8 @@
   }
   function renderOverview(d) {
     chart('c-daily', { type: 'bar', data: { labels: d.daily.map(function (x) { return brDate(x.date, true); }), datasets: [
-      { type: 'line', label: 'WhatsApp', data: d.daily.map(function (x) { return x.wa_clicks; }), borderColor: '#1E8E3E', backgroundColor: '#1E8E3E', tension: .35, pointRadius: 2, yAxisID: 'y1' },
+      { type: 'line', label: 'Leads formulário', data: d.daily.map(function (x) { return x.form_leads; }), borderColor: '#1E8E3E', backgroundColor: '#1E8E3E', tension: .35, pointRadius: 2, yAxisID: 'y1' },
+      { type: 'line', label: 'Leads botão WhatsApp', data: d.daily.map(function (x) { return x.button_leads; }), borderColor: '#5FB97A', backgroundColor: '#5FB97A', borderDash: [5, 4], tension: .35, pointRadius: 2, yAxisID: 'y1' },
       { type: 'line', label: 'Ligações', data: d.daily.map(function (x) { return x.phone_clicks; }), borderColor: '#B9975B', backgroundColor: '#B9975B', tension: .35, pointRadius: 2, yAxisID: 'y1' },
       { label: 'Visitas', data: d.daily.map(function (x) { return x.sessions; }), backgroundColor: 'rgba(22,40,74,.85)', borderRadius: 3 },
     ] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, y1: { position: 'right', beginAtZero: true, grid: { drawOnChartArea: false }, ticks: { precision: 0 } } }, plugins: { legend: { position: 'bottom' } } } });
@@ -148,10 +152,19 @@
     donut('c-audience', d.audience.map(function (x) { return { key: x.key === 'novo' ? 'Novo' : 'Recorrente', value: x.value }; }));
   }
   function renderContacts(d) {
+    renderLeads(d.leads.current);
     bars('#wa-loc', d.wa_by_location.map(ctaLabel));
     bars('#phone-loc', d.phone_by_location.map(ctaLabel));
     pivotTable('#contact-pivot', d.contact_location_x_channel);
     bars('#cta-loc', d.cta_by_location.map(ctaLabel));
+  }
+  var INSURANCE = { auto: 'Seguro Auto', empresarial: 'Seguro Empresarial', nao_informado: 'tipo não informado' };
+  function renderLeads(l) {
+    var items = [{ key: 'form', label: 'Formulário de cotação', value: l.form }];
+    l.form_by_type.forEach(function (x) { items.push({ key: 'form|' + x.key, label: '\u21B3 ' + (INSURANCE[x.key] || x.key), value: x.value }); });
+    items.push({ key: 'buttons', label: 'Botões de WhatsApp', value: l.buttons });
+    bars('#leads-split', items);
+    $('#leads-sub').textContent = l.total ? fmt(l.total) + ' leads no período · ' + dec(l.form_share, 1) + '% pelo formulário' : 'Nenhum lead no período';
   }
   // "maps · contato" → "Maps · Localização"; cta_id → nome do botão
   function ctaLabel(x) {

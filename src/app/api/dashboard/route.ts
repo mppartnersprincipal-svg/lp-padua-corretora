@@ -58,13 +58,17 @@ async function report(q: Record<string, string>) {
   const jornadas = q.jornadas === "todas" ? "todas" : "conv";
   const from = r.from.toISOString();
   const to = r.to.toISOString();
-  const [sessionsAll, prevAll, eventsAll] = await Promise.all([
+  const prevFrom = r.prevFrom.toISOString();
+  const prevTo = r.prevTo.toISOString();
+  const [sessionsAll, prevAll, eventsAll, prevEventsAll] = await Promise.all([
     selectAll("padua_sessions", `select=*&started_at=gte.${from}&started_at=lt.${to}&order=started_at.desc,id.asc`),
     selectAll(
       "padua_sessions",
-      `select=id,visitor_id,wa_clicks,phone_clicks,duration_ms,max_scroll_pct,channel,landing_page_type&started_at=gte.${r.prevFrom.toISOString()}&started_at=lt.${r.prevTo.toISOString()}&order=id.asc`,
+      `select=id,visitor_id,wa_clicks,phone_clicks,duration_ms,max_scroll_pct,channel,landing_page_type&started_at=gte.${prevFrom}&started_at=lt.${prevTo}&order=id.asc`,
     ),
     selectAll("padua_events", `select=session_id,ts,name,page_type,props&ts=gte.${from}&ts=lt.${to}&order=ts.asc,id.asc`),
+    // Só os leads do período anterior (comparação dos cards "Leads")
+    selectAll("padua_events", `select=session_id,ts,name,props&name=eq.whatsapp_click&ts=gte.${prevFrom}&ts=lt.${prevTo}&order=id.asc`),
   ]);
 
   return {
@@ -72,7 +76,7 @@ async function report(q: Record<string, string>) {
     origem: origem ?? "todas",
     pagina: pagina ?? "todas",
     jornadas,
-    ...buildReport({ r, sessionsAll, prevAll, eventsAll, origem, pagina, jornadas }),
+    ...buildReport({ r, sessionsAll, prevAll, eventsAll, prevEventsAll, origem, pagina, jornadas }),
     // selectAll para em MAX_ROWS: avisa o painel em vez de cortar em silêncio
     truncated: [sessionsAll, prevAll, eventsAll].some((rows) => rows.length >= MAX_ROWS),
     generated_at: new Date().toISOString(),
