@@ -10,7 +10,7 @@ const TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const TIMEOUT_MS = 20_000;
 const TOP_ROWS = 10;
 // Eventos que o GTM envia ao GA4 (mesmos nomes do dataLayer das páginas).
-export const GA4_EVENTS = ['click_whatsapp', 'form_submit', 'click_cta', 'click_phone', 'click_email', 'click_instagram', 'faq_open'];
+export const GA4_EVENTS = ['click_whatsapp', 'form_complete', 'click_cta', 'click_phone', 'click_email', 'click_instagram', 'faq_open'];
 
 function numeric(value) {
   if (value === undefined) return 0;

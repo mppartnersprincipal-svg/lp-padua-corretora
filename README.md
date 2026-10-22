@@ -28,10 +28,10 @@ npm test        # Vitest + node --test (analytics do painel)
 `gtm/GTM-MRMP8MT7-importar.json` (gerado pela skill `lp-tracking-dashboard`): Google Tag do GA4, uma tag de evento
 GA4 com nome = `{{Event}}` para todos os eventos abaixo (com `cta_id`, `section_id`, `percent_scrolled`, `faq_question`,
 `form_id`, `insurance_type`, `step` e UTMs), Vinculador de conversões, Meta Pixel (base + PageView em toda página e
-em cada troca de rota), `Contact` no `click_whatsapp` e `Lead` no `form_submit`.
+em cada troca de rota), `Contact` no `click_whatsapp` e `Lead` no `form_complete`.
 
 Importar: GTM → Administrador → Importar contêiner → arquivo → espaço de trabalho existente → **Mesclar** +
-**Substituir conflitantes** → Visualizar → **Enviar → Publicar**. No GA4, marcar `click_whatsapp` e `form_submit`
+**Substituir conflitantes** → Visualizar → **Enviar → Publicar**. No GA4, marcar `click_whatsapp` e `form_complete`
 como **eventos-chave**.
 
 ### Eventos (`src/lib/tracking.ts`)
@@ -40,12 +40,16 @@ como **eventos-chave**.
 |---|---|---|
 | `click_whatsapp` | qualquer link de WhatsApp (`data-cta`) | `cta_id` |
 | `form_step` | avançou um passo do formulário de cotação | `form_id`, `insurance_type`, `step` |
-| `form_submit` | enviou a cotação (abre o WhatsApp com a mensagem pronta) | `form_id`, `insurance_type` |
+| `form_complete` | enviou a cotação (abre o WhatsApp com a mensagem pronta) | `form_id`, `insurance_type` |
 | `click_cta` | botões "Cotar", cards de seguro, links internos (`data-track`) | `cta_id` |
 | `click_email` / `click_instagram` / `click_phone` | links de contato | — |
 | `faq_open` | abriu uma pergunta | `faq_question` |
 | `scroll_25/50/75/100` | rolagem (uma vez por página) | `percent_scrolled` |
 | `section_view` | seção apareceu (`main section[id]`) | `section_id` |
+
+> O envio final chama-se `form_complete` (e não `form_submit`): `form_submit`/`form_start` são nomes reservados da medição
+> otimizada do GA4. Com "interações com formulário" ligada, o GTM gera um `form_submit` interno a cada `<form>` enviado,
+> inclusive no "Continuar" dos passos, e acionadores de evento personalizado com esse nome disparam junto (corrigido em 22/10/2026).
 
 Todos levam as UTMs da entrada (`utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`). Dados do
 formulário (nome, CPF, telefone…) **nunca** vão para o `dataLayer` nem para o painel.

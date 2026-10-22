@@ -82,7 +82,7 @@ Destaque em títulos: `<Highlight>` (dourado no navy; sublinhado dourado no crem
   - **Auto, 3 passos** (pedido da dona da Pádua em 16/10/2026): 1) nome completo, WhatsApp, nascimento, CPF · 2) estado civil, profissão, CEP de pernoite (cidade via ViaCEP) · 3) modelo/versão/ano, placa (opcional), situação.
   - **Empresarial, 1 passo**: nome, WhatsApp, cidade, ramo, o que proteger.
   - Valida CPF (dígitos verificadores), nascimento (data real, 18+), CEP, telefone e placa (antiga/Mercosul).
-  - Dispara `form_step` (`step` 2 e 3) e `form_submit` (`form_id`, `insurance_type`) e abre `wa.me` com a mensagem pronta + origem (UTMs).
+  - Dispara `form_step` (`step` 2 e 3) e `form_complete` (`form_id`, `insurance_type`) e abre `wa.me` com a mensagem pronta + origem (UTMs).
   - **Nunca** colocar CPF, nome, telefone ou outro dado do formulário no dataLayer (teste E2E confere).
 - Automáticos: `scroll_25/50/75/100`, `section_view` (toda `main section[id]`), `faq_open`.
 - GTM só carrega com `NEXT_PUBLIC_GTM_ID` válido (`GTM-MRMP8MT7`). GA4 (`G-NM41WZ5Y2C`) e Meta Pixel (`1100323236037100`) ficam DENTRO do GTM: contêiner em `gtm/GTM-MRMP8MT7-importar.json` (IDs e eventos no `README.md`). Google Ads: ainda sem conversões (só Meta por enquanto).

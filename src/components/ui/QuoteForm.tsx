@@ -126,7 +126,7 @@ export function QuoteForm({ formId, defaultType = "auto", title = "Cotação gra
 
     const cepCity = cepLookup.status === "found" ? cepLookup.city : undefined;
     const url = buildWhatsAppUrl(buildQuoteMessage(type, values, getUtms(), { cepCity }));
-    track("form_submit", { form_id: formId, insurance_type: type });
+    track("form_complete", { form_id: formId, insurance_type: type });
     openWhatsApp(url);
     pendingFocus.current = "success";
     setSentUrl(url);

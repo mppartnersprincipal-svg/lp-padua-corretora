@@ -21,7 +21,7 @@
     cta_topbar_sinistro: 'Sinistro (barra do topo)', card_auto: 'Card Seguro Auto', card_empresarial: 'Card Seguro Empresarial', cta_sobre: 'Conheça a Pádua'
   };
   var GA4_CH = { 'Paid Search': 'Pesquisa paga', 'Organic Search': 'Pesquisa orgânica', Direct: 'Direto', Referral: 'Indicação', 'Organic Social': 'Social orgânico', 'Paid Social': 'Social pago', 'Cross-network': 'Várias redes', Display: 'Display', 'Paid Other': 'Outros pagos', 'Organic Maps': 'Maps', Unassigned: 'Não atribuído' };
-  var GA4_EV = { click_whatsapp: 'Cliques WhatsApp', form_submit: 'Cotações enviadas', click_cta: 'Botões Cotar e cards', click_phone: 'Cliques em ligar', click_email: 'E-mail', click_instagram: 'Instagram', faq_open: 'Perguntas abertas no FAQ' };
+  var GA4_EV = { click_whatsapp: 'Cliques WhatsApp', form_complete: 'Cotações enviadas', click_cta: 'Botões Cotar e cards', click_phone: 'Cliques em ligar', click_email: 'E-mail', click_instagram: 'Instagram', faq_open: 'Perguntas abertas no FAQ' };
   var ADS_STATUS = { ENABLED: ['Ativa', 'on'], PAUSED: ['Pausada', 'off'], REMOVED: ['Removida', 'rm'] };
   var COLORS = ['#16284A', '#B9975B', '#5C6878', '#7D6232', '#AEB7C6', '#CDB07E', '#0C1830', '#3A4C6E', '#E3E0D8'];
   var charts = {};
