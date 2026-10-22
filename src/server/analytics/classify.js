@@ -12,6 +12,8 @@ export function classifyChannel({ gclid, utm_source, utm_medium, utm_term, refer
   if (src === 'google' && paid) return 'google_ads';
   if (/instagram|^ig$/.test(src)) return paid ? 'meta_ads' : 'instagram';
   if (/facebook|^fb$|meta/.test(src)) return paid ? 'meta_ads' : 'facebook';
+  // {{site_source_name}} da Meta devolve fb | ig | msg (Messenger) | an (Audience Network)
+  if (/^(an|msg)$/.test(src)) return paid ? 'meta_ads' : 'facebook';
   if (src) return 'other';
   if (!ref) return 'direct';
   if (/google\./.test(ref)) return 'google_organic';

@@ -26,6 +26,10 @@ test('Instagram and Facebook split organic vs Meta Ads by medium', () => {
   assert.equal(classifyChannel({ utm_source: 'facebook' }), 'facebook');
   assert.equal(classifyChannel({ utm_source: 'fb', utm_medium: 'cpc' }), 'meta_ads');
   assert.equal(classifyChannel({ utm_source: 'meta', utm_medium: 'paid' }), 'meta_ads');
+  // {{site_source_name}} dos anúncios da Meta: an (Audience Network) e msg (Messenger)
+  assert.equal(classifyChannel({ utm_source: 'an', utm_medium: 'paid', referrer_host: 'l.facebook.com' }), 'meta_ads');
+  assert.equal(classifyChannel({ utm_source: 'msg', utm_medium: 'paid' }), 'meta_ads');
+  assert.equal(classifyChannel({ utm_source: 'an' }), 'facebook');
 });
 
 test('unknown utm_source is other; referrer decides when there is no UTM', () => {
