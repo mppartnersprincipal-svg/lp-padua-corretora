@@ -2,9 +2,9 @@ import { bearer, verifyToken } from "./auth.js";
 
 const NO_STORE = { "Cache-Control": "no-store" };
 
-/** JSON sem cache (respostas do painel nunca podem ficar em CDN). */
-export function json(body: unknown, status = 200): Response {
-  return Response.json(body, { status, headers: NO_STORE });
+/** JSON sem cache (respostas do painel nunca podem ficar em CDN). `headers` soma cabeçalhos (ex.: Retry-After). */
+export function json(body: unknown, status = 200, headers: Record<string, string> = {}): Response {
+  return Response.json(body, { status, headers: { ...NO_STORE, ...headers } });
 }
 
 /** Token do /api/login no cabeçalho Authorization: Bearer … */
