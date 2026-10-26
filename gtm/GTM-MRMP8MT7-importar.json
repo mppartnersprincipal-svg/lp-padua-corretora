@@ -363,7 +363,7 @@
           {
             "type": "TEMPLATE",
             "key": "html",
-            "value": "<script>window.fbq && fbq('track', 'Lead', {content_name: 'whatsapp', content_category: '{{dlv - cta_id}}'});</script>"
+            "value": "<script>(function () {\n  if (!window.fbq) return;\n  // event_id vem do site (lib/tracking.ts) e também vai para a API de Conversões: a Meta deduplica\n  var id = {{dlv - event_id}};\n  var data = {content_name: 'whatsapp', content_category: '{{dlv - cta_id}}'};\n  if (id) fbq('track', 'Lead', data, {eventID: String(id)});\n  else fbq('track', 'Lead', data);\n})();</script>"
           },
           {
             "type": "BOOLEAN",
@@ -392,7 +392,7 @@
           {
             "type": "TEMPLATE",
             "key": "html",
-            "value": "<script>window.fbq && fbq('track', 'Lead', {content_name: 'formulario', content_category: '{{dlv - form_id}}'});</script>"
+            "value": "<script>(function () {\n  if (!window.fbq) return;\n  // event_id vem do site (lib/tracking.ts) e também vai para a API de Conversões: a Meta deduplica\n  var id = {{dlv - event_id}};\n  var data = {content_name: 'formulario', content_category: '{{dlv - form_id}}'};\n  if (id) fbq('track', 'Lead', data, {eventID: String(id)});\n  else fbq('track', 'Lead', data);\n})();</script>"
           },
           {
             "type": "BOOLEAN",
@@ -793,6 +793,30 @@
             "type": "TEMPLATE",
             "key": "name",
             "value": "utm_content"
+          }
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "14",
+        "name": "dlv - event_id",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "event_id"
           }
         ]
       }

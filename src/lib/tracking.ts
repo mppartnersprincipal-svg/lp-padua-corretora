@@ -19,6 +19,7 @@
  */
 
 import { collect } from "@/lib/collector";
+import { type LeadSource, newEventId, sendMetaLead } from "@/lib/meta-lead";
 
 export type TrackingEvent =
   | "click_whatsapp"
@@ -58,6 +59,7 @@ const RESET_PARAMS: TrackingParams = {
   form_id: undefined,
   insurance_type: undefined,
   step: undefined,
+  event_id: undefined,
 };
 
 export type Utms = Partial<Record<(typeof UTM_KEYS)[number], string>>;
@@ -124,10 +126,21 @@ export function toCollector(event: TrackingEvent, params: TrackingParams): { nam
   return { name, props: { cta_location: params.cta_id ?? LINK_LABEL[event] } };
 }
 
+/** Eventos que viram Lead na Meta (tags do Pixel no GTM + API de Conversões), com a origem do lead. */
+export function metaLeadOf(event: TrackingEvent, params: TrackingParams): { source: LeadSource; category?: string } | null {
+  if (event === "click_whatsapp") return { source: "whatsapp", category: params.cta_id as string | undefined };
+  if (event === "form_complete") return { source: "formulario", category: params.form_id as string | undefined };
+  return null;
+}
+
 export function track(event: TrackingEvent, params: TrackingParams = {}): void {
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer ?? [];
-  window.dataLayer.push({ event, ...RESET_PARAMS, ...getUtms(), ...params });
+  // Mesmo event_id no Pixel (dataLayer → tag Lead) e no servidor: a Meta deduplica e conta um lead só
+  const lead = metaLeadOf(event, params);
+  const eventId = lead ? newEventId() : undefined;
+  window.dataLayer.push({ event, ...RESET_PARAMS, ...getUtms(), ...params, event_id: eventId });
+  if (lead && eventId) sendMetaLead(eventId, lead.source, lead.category);
 
   const mirrored = toCollector(event, params);
   if (mirrored) collect(mirrored.name, mirrored.props);
