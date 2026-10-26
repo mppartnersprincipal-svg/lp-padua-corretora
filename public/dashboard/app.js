@@ -15,9 +15,11 @@
     cta_whatsapp_footer: 'Rodapé', cta_whatsapp_footer_contato: 'Rodapé (contato)', cta_whatsapp_contato: 'Página Contato', cta_whatsapp_404: 'Página 404',
     cta_whatsapp_sinistro: 'Sinistro', cta_whatsapp_assistencia: 'Assistência 24h', cta_whatsapp_apolice: 'Apólice / 2ª via',
     cta_whatsapp_faq_home: 'FAQ (home)', cta_whatsapp_faq_auto: 'FAQ (Seguro Auto)', cta_whatsapp_faq_empresarial: 'FAQ (Seguro Empresarial)', cta_whatsapp_faq_contato: 'FAQ (Contato)',
+    cta_whatsapp_final_home: 'CTA final (home)', cta_whatsapp_final_auto: 'CTA final (Seguro Auto)', cta_whatsapp_final_empresarial: 'CTA final (Seguro Empresarial)', cta_whatsapp_final_sobre: 'CTA final (Sobre)',
+    cta_whatsapp_destaque_auto: 'Destaque (Seguro Auto)', cta_whatsapp_destaque_empresarial: 'Destaque (Seguro Empresarial)',
     form_hero_home: 'Formulário (home)', form_hero_auto: 'Formulário (Seguro Auto)', form_hero_empresarial: 'Formulário (Seguro Empresarial)', form_contato: 'Formulário (Contato)',
     cta_cotar_header: 'Cotar (topo)', cta_cotar_hero: 'Cotar (hero)', cta_cotar_menu: 'Cotar (menu)', cta_cotar_barra_mobile: 'Cotar (barra fixa)',
-    cta_cotar_final_home: 'Cotar (CTA final, home)', cta_cotar_final_auto: 'Cotar (CTA final, auto)', cta_cotar_final_sobre: 'Cotar (CTA final, sobre)',
+    cta_cotar_final_home: 'Cotar (CTA final, home)', cta_cotar_final_auto: 'Cotar (CTA final, auto)', cta_cotar_final_sobre: 'Cotar (CTA final, sobre)', cta_cotar_final_empresarial: 'Cotar (CTA final, empresarial)',
     cta_topbar_sinistro: 'Sinistro (barra do topo)', card_auto: 'Card Seguro Auto', card_empresarial: 'Card Seguro Empresarial', cta_sobre: 'Conheça a Pádua'
   };
   var GA4_CH = { 'Paid Search': 'Pesquisa paga', 'Organic Search': 'Pesquisa orgânica', Direct: 'Direto', Referral: 'Indicação', 'Organic Social': 'Social orgânico', 'Paid Social': 'Social pago', 'Cross-network': 'Várias redes', Display: 'Display', 'Paid Other': 'Outros pagos', 'Organic Maps': 'Maps', Unassigned: 'Não atribuído' };
@@ -131,9 +133,10 @@
   function renderKpis(c, p, l, lp) {
     $('#kpis').innerHTML = [
       kpi('Visitas', c.sessions, p.sessions), kpi('Visitantes', c.visitors, p.visitors),
-      kpi('Leads', l.total, lp.total, null, null, 'gold', 'Formulário + botões de WhatsApp'),
-      kpi('Leads pelo formulário', l.form, lp.form, null, null, 'gold', 'Cotação enviada (abre o WhatsApp)'),
-      kpi('Leads pelo botão WhatsApp', l.buttons, lp.buttons, null, null, 'gold', 'Cliques em "Falar no WhatsApp"'),
+      kpi('Leads (cliques)', l.total, lp.total, null, null, 'gold', 'Formulário + botões de WhatsApp; a mesma pessoa pode clicar mais de uma vez'),
+      kpi('Pessoas que chamaram', l.people, lp.people, null, null, 'gold', 'Visitas com ao menos 1 clique de WhatsApp; compare com o Meta e o CRM'),
+      kpi('Leads pelo formulário', l.form, lp.form, null, null, 'gold', 'Cotação enviada (abre o WhatsApp) · ' + fmt(l.form_people) + ' pessoa' + (l.form_people === 1 ? '' : 's')),
+      kpi('Leads pelo botão WhatsApp', l.buttons, lp.buttons, null, null, 'gold', 'Cliques em "Falar no WhatsApp" · ' + fmt(l.button_people) + ' pessoa' + (l.button_people === 1 ? '' : 's')),
       kpi('Ligações', c.phone_clicks, p.phone_clicks, null, null, 'gold'),
       kpi('Taxa de conversão', dec(c.conversion_rate, 1) + '%', null, c.conversion_rate - p.conversion_rate, 'pp', 'gold', 'Sessões com WhatsApp, cotação ou ligação'),
       kpi('Tempo médio', c.avg_duration_s + ' s', null, pctDelta(c.avg_duration_s, p.avg_duration_s)), kpi('Rolagem média', c.avg_scroll_pct + '%'),
@@ -164,7 +167,7 @@
     l.form_by_type.forEach(function (x) { items.push({ key: 'form|' + x.key, label: '\u21B3 ' + (INSURANCE[x.key] || x.key), value: x.value }); });
     items.push({ key: 'buttons', label: 'Botões de WhatsApp', value: l.buttons });
     bars('#leads-split', items);
-    $('#leads-sub').textContent = l.total ? fmt(l.total) + ' leads no período · ' + dec(l.form_share, 1) + '% pelo formulário' : 'Nenhum lead no período';
+    $('#leads-sub').textContent = l.total ? fmt(l.total) + ' cliques de ' + fmt(l.people) + ' pessoa' + (l.people === 1 ? '' : 's') + ' no período · ' + dec(l.form_share, 1) + '% pelo formulário' : 'Nenhum lead no período';
   }
   // "maps · contato" → "Maps · Localização"; cta_id → nome do botão
   function ctaLabel(x) {

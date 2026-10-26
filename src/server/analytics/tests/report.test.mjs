@@ -90,6 +90,21 @@ test('leads split form submissions (cta_location = form_id) from WhatsApp button
   assert.deepEqual(l.buttons_by_location, [{ key: 'fab_whatsapp', value: 1 }]);
 });
 
+test('leads count people (sessions) apart from clicks, comparable to the Meta Pixel', () => {
+  const events = [
+    ev('a', '2026-10-22T12:00:00Z', 'whatsapp_click', { cta_location: 'cta_whatsapp_barra_mobile' }),
+    ev('a', '2026-10-22T12:05:00Z', 'whatsapp_click', { cta_location: 'cta_whatsapp_barra_mobile' }),
+    ev('a', '2026-10-22T12:07:00Z', 'whatsapp_click', { cta_location: 'form_hero_home' }),
+    ev('b', '2026-10-22T13:00:00Z', 'whatsapp_click', { cta_location: 'fab_whatsapp' }),
+    ev('c', '2026-10-22T14:00:00Z', 'phone_click', { cta_location: 'telefone · contato' }),
+  ];
+  const l = leads(events);
+  assert.equal(l.total, 4);
+  assert.equal(l.people, 2);
+  assert.equal(l.form_people, 1);
+  assert.equal(l.button_people, 2);
+});
+
 test('daily series counts form and button leads on the day of the click', () => {
   const from = new Date('2026-10-22T03:00:00Z'), to = new Date('2026-10-24T03:00:00Z');
   const sessions = [{ started_at: '2026-10-22T12:00:00Z', wa_clicks: 2 }];

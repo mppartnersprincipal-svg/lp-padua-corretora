@@ -79,14 +79,19 @@ export function daily(sessions, from, to, events = []) {
 
 /** Lead = clique de WhatsApp. Vem do formulário de cotação (cta_location = form_id) ou de um botão (cta_id). */
 const isFormLead = (e) => /^form_/.test(e.props?.cta_location || '');
+// Pessoas = sessões com ao menos um clique; é o número comparável ao Lead do Meta Pixel e ao CRM
+const people = (evs) => new Set(evs.map((e) => e.session_id)).size;
 export function leads(events) {
   const wa = events.filter((e) => e.name === 'whatsapp_click');
   const form = wa.filter(isFormLead);
   const buttons = wa.filter((e) => !isFormLead(e));
   return {
     total: wa.length,
+    people: people(wa),
     form: form.length,
+    form_people: people(form),
     buttons: buttons.length,
+    button_people: people(buttons),
     form_share: pct1(form.length, wa.length),
     form_by_type: count(form, (e) => e.props.insurance_type || 'nao_informado'),
     form_by_location: count(form, (e) => e.props.cta_location),
