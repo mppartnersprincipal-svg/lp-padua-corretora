@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { fieldConfigFor } from "@/components/ui/quote/fieldConfig";
 import {
   buildQuoteMessage,
+  NEW_CAR_SITUATION,
   EMPTY_QUOTE,
   QUOTE_STEPS,
   validateFields,
@@ -18,6 +20,7 @@ const AUTO_VALUES: QuoteValues = {
   profissao: "Professora",
   cep: "13010-000",
   veiculo: "Onix LT 1.0 2023",
+  placa: "ABC1D23",
   situacao: "Carro novo (0 km)",
 };
 
@@ -46,9 +49,29 @@ describe("validação", () => {
     expect(validateFields(["nome"], { ...EMPTY_QUOTE, nome: "Maria" }).nome).toBe("Informe nome e sobrenome.");
   });
 
-  it("placa é opcional, mas validada quando preenchida", () => {
-    expect(validateFields(["placa"], EMPTY_QUOTE)).toEqual({});
-    expect(validateFields(["placa"], { ...EMPTY_QUOTE, placa: "AB12" }).placa).toBeDefined();
+  it("placa é obrigatória e precisa estar no padrão antigo ou Mercosul", () => {
+    expect(validateFields(["placa"], EMPTY_QUOTE).placa).toBe("Informe a placa do veículo.");
+    expect(validateFields(["placa"], { ...EMPTY_QUOTE, placa: "AB12" }).placa).toBe("Confira a placa (ex.: ABC1D23).");
+    expect(validateFields(["placa"], { ...EMPTY_QUOTE, placa: "ABC1234" })).toEqual({});
+  });
+
+  it("carro 0 km pode seguir sem placa, mas placa preenchida continua validada", () => {
+    const newCar = { ...EMPTY_QUOTE, situacao: NEW_CAR_SITUATION };
+    expect(validateFields(["placa"], newCar)).toEqual({});
+    expect(validateFields(["placa"], { ...newCar, placa: "AB12" }).placa).toBe("Confira a placa (ex.: ABC1D23).");
+    expect(validateFields(["placa"], { ...EMPTY_QUOTE, situacao: "Carro usado, sem seguro hoje" }).placa).toBeDefined();
+  });
+
+  it("a situação vem antes da placa, para o campo já saber se é 0 km", () => {
+    const fields = QUOTE_STEPS.auto[2].fields;
+    expect(fields.indexOf("situacao")).toBeLessThan(fields.indexOf("placa"));
+  });
+
+  it("campo da placa avisa que 0 km pode ficar sem placa", () => {
+    expect(fieldConfigFor("placa", EMPTY_QUOTE).label).toBe("Placa");
+    const config = fieldConfigFor("placa", { ...EMPTY_QUOTE, situacao: NEW_CAR_SITUATION });
+    expect(config.placeholder).toBe("Ainda não tenho placa");
+    expect(config.label).toBe("Placa (opcional para 0 km)");
   });
 
   it("cotação auto completa não tem erros", () => {
@@ -74,9 +97,14 @@ describe("buildQuoteMessage", () => {
     expect(message).toContain("_Origem: site · google / cpc / auto_");
   });
 
-  it("omite campos opcionais vazios e a origem sem UTM", () => {
+  it("0 km sem placa avisa na mensagem em vez de omitir", () => {
+    const message = buildQuoteMessage("auto", { ...AUTO_VALUES, placa: "" });
+    expect(message).toContain("*Placa:* ainda não tem (carro 0 km)");
+  });
+
+  it("leva a placa e omite a origem sem UTM", () => {
     const message = buildQuoteMessage("auto", AUTO_VALUES);
-    expect(message).not.toContain("Placa");
+    expect(message).toContain("*Placa:* ABC1D23");
     expect(message).not.toContain("Origem");
   });
 

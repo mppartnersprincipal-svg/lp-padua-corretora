@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Lock } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/icons";
-import { QUOTE_FIELDS } from "@/components/ui/quote/fieldConfig";
+import { fieldConfigFor, QUOTE_FIELDS } from "@/components/ui/quote/fieldConfig";
 import { QuoteFieldInput, type FieldHint } from "@/components/ui/quote/QuoteFieldInput";
 import { QuoteSuccess } from "@/components/ui/quote/QuoteSuccess";
 import { StepProgress } from "@/components/ui/quote/StepProgress";
@@ -175,7 +175,7 @@ export function QuoteForm({ formId, defaultType = "auto", title = "Cotação gra
                 key={field}
                 id={`${uid}-${field}`}
                 name={field}
-                config={QUOTE_FIELDS[field]}
+                config={fieldConfigFor(field, values)}
                 value={values[field]}
                 error={errors[field]}
                 hint={field === "cep" ? cepHint(cepLookup) : undefined}

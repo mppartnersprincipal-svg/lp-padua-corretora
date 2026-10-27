@@ -56,12 +56,21 @@ export const QUOTE_STEPS: Record<InsuranceType, QuoteStep[]> = {
   auto: [
     { title: "Seus dados", fields: ["nome", "telefone", "nascimento", "cpf"] },
     { title: "Seu perfil", fields: ["estadoCivil", "profissao", "cep"] },
-    { title: "Seu veículo", fields: ["veiculo", "placa", "situacao"] },
+    // Situação antes da placa: no 0 km a placa pode ficar em branco
+    { title: "Seu veículo", fields: ["veiculo", "situacao", "placa"] },
   ],
   empresarial: [{ title: "Sua empresa", fields: ["nome", "telefone", "cidade", "ramo", "protecao"] }],
 };
 
-type Validator = (value: string) => string | null;
+/** Carro 0 km costuma ainda não ter placa: é a única situação em que ela pode ficar em branco. */
+export const NEW_CAR_SITUATION = "Carro novo (0 km)";
+export const NEW_CAR_PLATE_NOTE = "ainda não tem (carro 0 km)";
+
+export function isPlateOptional(values: QuoteValues): boolean {
+  return values.situacao === NEW_CAR_SITUATION;
+}
+
+type Validator = (value: string, values: QuoteValues) => string | null;
 
 const required =
   (message: string): Validator =>
@@ -78,8 +87,10 @@ const VALIDATORS: Record<QuoteField, Validator> = {
   cep: (value) => (isValidCep(value) ? null : "Informe um CEP com 8 números."),
   cidade: required("Informe sua cidade."),
   veiculo: required("Informe o modelo e o ano do veículo."),
-  // Placa é opcional: só valida se foi preenchida
-  placa: (value) => (!value.trim() || isValidPlate(value) ? null : "Confira a placa (ex.: ABC1D23)."),
+  placa: (value, values) => {
+    if (!value.trim()) return isPlateOptional(values) ? null : "Informe a placa do veículo.";
+    return isValidPlate(value) ? null : "Confira a placa (ex.: ABC1D23).";
+  },
   situacao: required("Escolha uma opção."),
   ramo: required("Informe o ramo da empresa."),
   protecao: required("Escolha uma opção."),
@@ -88,7 +99,7 @@ const VALIDATORS: Record<QuoteField, Validator> = {
 /** Erros na ordem dos campos informados (o primeiro recebe o foco). */
 export function validateFields(fields: QuoteField[], values: QuoteValues): QuoteErrors {
   return fields.reduce<QuoteErrors>((errors, field) => {
-    const message = VALIDATORS[field](values[field]);
+    const message = VALIDATORS[field](values[field], values);
     return message ? { ...errors, [field]: message } : errors;
   }, {});
 }
@@ -127,6 +138,13 @@ function formatOrigin(utms: Utms): string | null {
   return [utms.utm_source, utms.utm_medium, utms.utm_campaign].filter(Boolean).join(" / ");
 }
 
+/** Valor de cada linha da mensagem; null = campo vazio, fica de fora. */
+function displayValue(field: QuoteField, values: QuoteValues, extras: QuoteMessageExtras): string | null {
+  const value = values[field].trim();
+  if (!value) return field === "placa" && isPlateOptional(values) ? NEW_CAR_PLATE_NOTE : null;
+  return field === "cep" && extras.cepCity ? `${value} (${extras.cepCity})` : value;
+}
+
 /** Mensagem que chega pronta no WhatsApp da Pádua (negrito no formato do WhatsApp). */
 export function buildQuoteMessage(
   type: InsuranceType,
@@ -135,12 +153,9 @@ export function buildQuoteMessage(
   extras: QuoteMessageExtras = {},
 ): string {
   const fieldLines = getQuoteFields(type)
-    .filter((field) => values[field].trim())
-    .map((field) => {
-      const value = values[field].trim();
-      const display = field === "cep" && extras.cepCity ? `${value} (${extras.cepCity})` : value;
-      return `*${MESSAGE_LABELS[field]}:* ${display}`;
-    });
+    .map((field) => ({ field, display: displayValue(field, values, extras) }))
+    .filter((line): line is { field: QuoteField; display: string } => line.display !== null)
+    .map(({ field, display }) => `*${MESSAGE_LABELS[field]}:* ${display}`);
 
   const lines = [`Olá, Pádua! Quero uma cotação de *${INSURANCE_LABEL[type]}*.`, "", ...fieldLines];
   const origin = formatOrigin(utms);

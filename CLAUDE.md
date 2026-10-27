@@ -79,7 +79,7 @@ Destaque em títulos: `<Highlight>` (dourado no navy; sublinhado dourado no crem
 
 - Todo CTA de WhatsApp tem `data-cta="<id único>"` → `click_whatsapp` + `cta_id`. Outros CTAs: `data-track="click_cta" data-cta-id="..."`.
 - `QuoteForm` (passos e campos em `lib/quote.ts` → `QUOTE_STEPS`; rótulos/máscaras em `components/ui/quote/fieldConfig.ts`):
-  - **Auto, 3 passos** (pedido da dona da Pádua em 16/10/2026): 1) nome completo, WhatsApp, nascimento, CPF · 2) estado civil, profissão, CEP de pernoite (cidade via ViaCEP) · 3) modelo/versão/ano, placa (opcional), situação.
+  - **Auto, 3 passos** (pedido da dona da Pádua em 16/10/2026): 1) nome completo, WhatsApp, nascimento, CPF · 2) estado civil, profissão, CEP de pernoite (cidade via ViaCEP) · 3) modelo/versão/ano, placa (obrigatória desde 27/10/2026), situação.
   - **Empresarial, 1 passo**: nome, WhatsApp, cidade, ramo, o que proteger.
   - Valida CPF (dígitos verificadores), nascimento (data real, 18+), CEP, telefone e placa (antiga/Mercosul).
   - Dispara `form_step` (`step` 2 e 3) e `form_complete` (`form_id`, `insurance_type`) e abre `wa.me` com a mensagem pronta + origem (UTMs).

@@ -1,5 +1,5 @@
 import { maskCep, maskCpf, maskDate, maskPhone, maskPlate } from "@/lib/format";
-import type { QuoteField } from "@/lib/quote";
+import { isPlateOptional, NEW_CAR_SITUATION, type QuoteField, type QuoteValues } from "@/lib/quote";
 
 export interface QuoteFieldConfig {
   label: string;
@@ -20,7 +20,7 @@ const ESTADO_CIVIL_OPTIONS = ["Solteiro(a)", "Casado(a)", "União estável", "Di
 
 const SITUACAO_OPTIONS = [
   "Quero renovar ou comparar meu seguro atual",
-  "Carro novo (0 km)",
+  NEW_CAR_SITUATION,
   "Carro usado, sem seguro hoje",
 ];
 
@@ -96,7 +96,7 @@ export const QUOTE_FIELDS: Record<QuoteField, QuoteFieldConfig> = {
     isFullWidth: true,
   },
   placa: {
-    label: "Placa (opcional)",
+    label: "Placa",
     kind: "text",
     autoComplete: "off",
     placeholder: "ABC1D23",
@@ -113,3 +113,15 @@ export const QUOTE_FIELDS: Record<QuoteField, QuoteFieldConfig> = {
   },
   protecao: { label: "O que você quer proteger?", kind: "select", options: PROTECAO_OPTIONS, isFullWidth: true },
 };
+
+/** Placa no 0 km: avisa que pode ficar em branco (a validação em lib/quote.ts segue a mesma regra). */
+const NEW_CAR_PLATE: Partial<QuoteFieldConfig> = {
+  label: "Placa (opcional para 0 km)",
+  placeholder: "Ainda não tenho placa",
+  hint: "Carro 0 km ainda sem placa? Pode deixar em branco.",
+};
+
+export function fieldConfigFor(field: QuoteField, values: QuoteValues): QuoteFieldConfig {
+  const config = QUOTE_FIELDS[field];
+  return field === "placa" && isPlateOptional(values) ? { ...config, ...NEW_CAR_PLATE } : config;
+}

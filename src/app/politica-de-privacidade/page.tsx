@@ -18,7 +18,7 @@ const SECTIONS = [
   {
     title: "2. Quais dados coletamos",
     body: [
-      "Formulário de cotação: nome, telefone e, no seguro auto, CPF, data de nascimento, estado civil, profissão, CEP de pernoite e dados do veículo (modelo, ano e, se informada, a placa). No seguro empresarial, cidade e informações sobre a empresa. São os dados que as seguradoras exigem para calcular o preço.",
+      "Formulário de cotação: nome, telefone e, no seguro auto, CPF, data de nascimento, estado civil, profissão, CEP de pernoite e dados do veículo (modelo, ano e placa). No seguro empresarial, cidade e informações sobre a empresa. São os dados que as seguradoras exigem para calcular o preço.",
       "Esses dados não ficam armazenados no site: ao enviar, eles são levados para uma conversa no WhatsApp com a Pádua, onde a cotação continua. Para mostrar a cidade, o número do CEP é consultado no serviço público ViaCEP. Dados pessoais do formulário não são enviados para as ferramentas de análise.",
       "Navegação: dados de uso coletados por ferramentas de análise e de anúncios (Google Analytics e Meta Pixel, via Google Tag Manager), por exemplo páginas visitadas, tipo de dispositivo e origem do acesso (incluindo parâmetros de campanha, as UTMs).",
       "Estatística própria do site: registramos de forma anônima as páginas vistas, os botões clicados, o tempo na página e a cidade aproximada (informada pelo provedor de hospedagem, sem guardar o endereço IP). Não usamos cookies nem dados pessoais para isso.",
